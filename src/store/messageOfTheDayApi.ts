@@ -1,52 +1,49 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-// Define the shape of the message of the day response
+// Define the shape of the message of the day response (matches actual API)
 export interface MessageOfTheDay {
   id: string;
-  message: string;
-  date: string;
-  author?: string;
+  content: string;
+  createdAt: string;
+  userId: string;
 }
 
-// Define the API response shape from quotable.io
-interface QuotableResponse {
-  _id: string;
-  content: string;
-  author: string;
-  tags: string[];
-  authorSlug: string;
-  length: number;
+// Define the health check response
+export interface HealthResponse {
+  status: string;
+  timestamp: string;
+  service: string;
 }
 
 // Define the API slice
 export const messageOfTheDayApi = createApi({
   reducerPath: 'messageOfTheDayApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://api.quotable.io/', // Using a free quotes API as example
+    baseUrl: 'https://s2d9u010sg.execute-api.us-west-2.amazonaws.com',
   }),
-  tagTypes: ['MessageOfTheDay'],
+  tagTypes: ['MessageOfTheDay', 'Health'],
   endpoints: (builder) => ({
-    // Get a random message/quote of the day
+    // GET /api/messageoftheday - Get message of the day
     getMessageOfTheDay: builder.query<MessageOfTheDay, void>({
-      query: () => 'random',
-      transformResponse: (response: QuotableResponse): MessageOfTheDay => ({
-        id: response._id,
-        message: response.content,
-        date: new Date().toISOString().split('T')[0],
-        author: response.author,
-      }),
+      query: () => '/api/messageoftheday',
       providesTags: ['MessageOfTheDay'],
     }),
-    // Get a specific message by ID (if needed)
-    getMessageById: builder.query<MessageOfTheDay, string>({
-      query: (id) => `quotes/${id}`,
-      transformResponse: (response: QuotableResponse): MessageOfTheDay => ({
-        id: response._id,
-        message: response.content,
-        date: new Date().toISOString().split('T')[0],
-        author: response.author,
+    // POST /api/messageoftheday - Create a new message of the day
+    createMessageOfTheDay: builder.mutation<MessageOfTheDay, string>({
+      query: (messageText) => ({
+        url: '/api/messageoftheday',
+        method: 'POST',
+        body: `"${messageText}"`,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }),
-      providesTags: (_result, _error, id) => [{ type: 'MessageOfTheDay', id }],
+      invalidatesTags: ['MessageOfTheDay'],
+    }),
+    // GET /health - Health check endpoint
+    getHealthCheck: builder.query<HealthResponse, void>({
+      query: () => '/health',
+      providesTags: ['Health'],
     }),
   }),
 });
@@ -54,5 +51,6 @@ export const messageOfTheDayApi = createApi({
 // Export hooks for usage in functional components
 export const {
   useGetMessageOfTheDayQuery,
-  useGetMessageByIdQuery,
+  useCreateMessageOfTheDayMutation,
+  useGetHealthCheckQuery,
 } = messageOfTheDayApi;

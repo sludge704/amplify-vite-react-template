@@ -2,10 +2,15 @@ import React from 'react';
 import { useGetMessageOfTheDayQuery } from '../store/messageOfTheDayApi';
 
 export const MessageOfTheDayComponent: React.FC = () => {
-  const { data: message, error, isLoading, refetch } = useGetMessageOfTheDayQuery();
+  const {
+    data: message,
+    error,
+    isLoading,
+    refetch,
+  } = useGetMessageOfTheDayQuery();
 
   if (isLoading) return <div>Loading message of the day...</div>;
-  
+
   if (error) {
     return (
       <div>
@@ -16,28 +21,33 @@ export const MessageOfTheDayComponent: React.FC = () => {
   }
 
   return (
-    <div style={{ 
-      padding: '20px', 
-      margin: '20px 0', 
-      border: '1px solid #ddd', 
-      borderRadius: '8px',
-      backgroundColor: '#f9f9f9'
-    }}>
+    <div
+      style={{
+        padding: '20px',
+        margin: '20px 0',
+        border: '1px solid #ddd',
+        borderRadius: '8px',
+        backgroundColor: '#f9f9f9',
+      }}
+    >
       <h3>💭 Message of the Day</h3>
       {message && (
         <>
-          <blockquote style={{ fontSize: '18px', fontStyle: 'italic', margin: '10px 0' }}>
-            "{message.message}"
+          <blockquote
+            style={{ fontSize: '18px', fontStyle: 'italic', margin: '10px 0' }}
+          >
+            "{message.content}"
           </blockquote>
-          {message.author && (
+          {message.userId && (
             <p style={{ textAlign: 'right', fontWeight: 'bold' }}>
-              — {message.author}
+              — User: {message.userId}
             </p>
           )}
           <p style={{ fontSize: '12px', color: '#666' }}>
-            Date: {message.date}
+            ID: {message.id} | Created:{' '}
+            {new Date(message.createdAt).toLocaleString()}
           </p>
-          <button 
+          <button
             onClick={() => refetch()}
             style={{
               padding: '8px 16px',
@@ -45,7 +55,7 @@ export const MessageOfTheDayComponent: React.FC = () => {
               color: 'white',
               border: 'none',
               borderRadius: '4px',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             Get New Message
