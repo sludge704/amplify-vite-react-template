@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import {
-  useGetMessageOfTheDayQuery,
+  useLazyGetMessageOfTheDayQuery,
   useCreateMessageOfTheDayMutation,
-  useGetHealthCheckQuery,
+  useLazyGetHealthCheckQuery,
   MessageOfTheDay,
 } from '../store/messageOfTheDayApi';
 
@@ -12,22 +12,16 @@ export const ApiDemo: React.FC = () => {
     null
   );
 
-  // Query hooks
-  const {
-    data: messageData,
-    error: messageError,
-    isLoading: messageLoading,
-    refetch: refetchMessage,
-  } = useGetMessageOfTheDayQuery();
+  // Lazy Query hooks
+  const [
+    getMessageOfTheDay,
+    { data: messageData, error: messageError, isLoading: messageLoading },
+  ] = useLazyGetMessageOfTheDayQuery();
 
-  console.log('messageData', messageData);
-
-  const {
-    data: healthData,
-    error: healthError,
-    isLoading: healthLoading,
-    refetch: refetchHealth,
-  } = useGetHealthCheckQuery();
+  const [
+    getHealthCheck,
+    { data: healthData, error: healthError, isLoading: healthLoading },
+  ] = useLazyGetHealthCheckQuery();
 
   // Mutation hook
   const [createMessage, { isLoading: createLoading, error: createError }] =
@@ -40,7 +34,7 @@ export const ApiDemo: React.FC = () => {
         setCreatedMessage(result);
         setNewContent('');
         // Optionally refetch the message list
-        refetchMessage();
+        getMessageOfTheDay();
       } catch (error) {
         console.error('Failed to create message:', error);
         setCreatedMessage(null);
@@ -50,7 +44,7 @@ export const ApiDemo: React.FC = () => {
 
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <h2>🚀 API Demo - Three Endpoints</h2>
+      <h2>Amplify/AWS Gateway Demo - Three Endpoints</h2>
 
       {/* Health Check Section */}
       <div
@@ -64,7 +58,7 @@ export const ApiDemo: React.FC = () => {
       >
         <h3>🏥 Health Check - GET /health</h3>
         <button
-          onClick={() => refetchHealth()}
+          onClick={() => getHealthCheck()}
           disabled={healthLoading}
           style={{
             padding: '8px 16px',
@@ -89,8 +83,6 @@ export const ApiDemo: React.FC = () => {
           <div style={{ marginTop: '10px', fontFamily: 'monospace' }}>
             <strong>Status:</strong> {healthData.status}
             <br />
-            <strong>Service:</strong> {healthData.service}
-            <br />
             <strong>Timestamp:</strong> {healthData.timestamp}
           </div>
         )}
@@ -108,7 +100,7 @@ export const ApiDemo: React.FC = () => {
       >
         <h3>📖 Get Message - GET /api/messageoftheday</h3>
         <button
-          onClick={() => refetchMessage()}
+          onClick={() => getMessageOfTheDay()}
           disabled={messageLoading}
           style={{
             padding: '8px 16px',

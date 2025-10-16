@@ -51,6 +51,8 @@ export const messageOfTheDayApi = createApi({
 // Export hooks for usage in functional components
 export const {
   useGetMessageOfTheDayQuery,
+  useLazyGetMessageOfTheDayQuery,
   useCreateMessageOfTheDayMutation,
   useGetHealthCheckQuery,
+  useLazyGetHealthCheckQuery,
 } = messageOfTheDayApi;
