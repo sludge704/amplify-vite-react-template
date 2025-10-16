@@ -11,6 +11,8 @@ export const ApiDemo: React.FC = () => {
   const [createdMessage, setCreatedMessage] = useState<MessageOfTheDay | null>(
     null
   );
+  const [showHealthData, setShowHealthData] = useState(false);
+  const [showMessageData, setShowMessageData] = useState(false);
 
   // Lazy Query hooks
   const [
@@ -35,6 +37,7 @@ export const ApiDemo: React.FC = () => {
         setNewContent('');
         // Optionally refetch the message list
         getMessageOfTheDay();
+        setShowMessageData(true);
       } catch (error) {
         console.error('Failed to create message:', error);
         setCreatedMessage(null);
@@ -42,9 +45,27 @@ export const ApiDemo: React.FC = () => {
     }
   };
 
+  const handleHealthCheck = () => {
+    getHealthCheck();
+    setShowHealthData(true);
+  };
+
+  const handleGetMessage = () => {
+    getMessageOfTheDay();
+    setShowMessageData(true);
+  };
+
+  const clearHealthData = () => {
+    setShowHealthData(false);
+  };
+
+  const clearMessageData = () => {
+    setShowMessageData(false);
+  };
+
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <h2>Amplify/AWS Gateway Demo - Three Endpoints</h2>
+      <h2>Amplify/API Gateway Demo - Three Endpoints</h2>
 
       {/* Health Check Section */}
       <div
@@ -57,21 +78,38 @@ export const ApiDemo: React.FC = () => {
         }}
       >
         <h3>🏥 Health Check - GET /health</h3>
-        <button
-          onClick={() => getHealthCheck()}
-          disabled={healthLoading}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            marginBottom: '10px',
-          }}
-        >
-          {healthLoading ? 'Checking...' : 'Check Health'}
-        </button>
+        <div style={{ marginBottom: '10px' }}>
+          <button
+            onClick={handleHealthCheck}
+            disabled={healthLoading}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              marginRight: '10px',
+            }}
+          >
+            {healthLoading ? 'Checking...' : 'Check Health'}
+          </button>
+          {showHealthData && healthData && (
+            <button
+              onClick={clearHealthData}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#6c757d',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
 
         {healthError && (
           <div style={{ color: 'red', marginTop: '10px' }}>
@@ -79,7 +117,7 @@ export const ApiDemo: React.FC = () => {
           </div>
         )}
 
-        {healthData && (
+        {showHealthData && healthData && (
           <div style={{ marginTop: '10px', fontFamily: 'monospace' }}>
             <strong>Status:</strong> {healthData.status}
             <br />
@@ -99,21 +137,38 @@ export const ApiDemo: React.FC = () => {
         }}
       >
         <h3>📖 Get Message - GET /api/messageoftheday</h3>
-        <button
-          onClick={() => getMessageOfTheDay()}
-          disabled={messageLoading}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#2196F3',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            marginBottom: '10px',
-          }}
-        >
-          {messageLoading ? 'Loading...' : 'Get Message'}
-        </button>
+        <div style={{ marginBottom: '10px' }}>
+          <button
+            onClick={handleGetMessage}
+            disabled={messageLoading}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#2196F3',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              marginRight: '10px',
+            }}
+          >
+            {messageLoading ? 'Loading...' : 'Get Message'}
+          </button>
+          {showMessageData && messageData && (
+            <button
+              onClick={clearMessageData}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#6c757d',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
 
         {messageError && (
           <div style={{ color: 'red', marginTop: '10px' }}>
@@ -121,7 +176,7 @@ export const ApiDemo: React.FC = () => {
           </div>
         )}
 
-        {messageData && (
+        {showMessageData && messageData && (
           <div
             style={{
               marginTop: '10px',
@@ -187,6 +242,7 @@ export const ApiDemo: React.FC = () => {
               border: '1px solid #ddd',
               borderRadius: '4px',
               fontSize: '14px',
+              boxSizing: 'border-box',
             }}
           />
         </div>
