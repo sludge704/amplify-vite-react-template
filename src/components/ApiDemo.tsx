@@ -35,9 +35,6 @@ export const ApiDemo: React.FC = () => {
         const result = await createMessage(newContent).unwrap();
         setCreatedMessage(result);
         setNewContent('');
-        // Optionally refetch the message list
-        getMessageOfTheDay();
-        setShowMessageData(true);
       } catch (error) {
         console.error('Failed to create message:', error);
         setCreatedMessage(null);
